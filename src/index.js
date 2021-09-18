@@ -1,5 +1,6 @@
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js';
 import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut} from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js';
+import {getFirestore,collection, addDoc} from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
 
 var userresult
 
@@ -12,7 +13,15 @@ const firebaseApp= initializeApp({
     appId: "1:48632438260:web:f6a1d28622503d68c8ada1"
 });
 
+const db = getFirestore(firebaseApp);
+
 const auth = getAuth(firebaseApp)
+
+function goToLink(link) {
+    location.replace(link)
+  }
+
+
 
 const makeAuth =()=>{
     const provider = new GoogleAuthProvider(firebaseApp);
@@ -24,7 +33,7 @@ const makeAuth =()=>{
         // The signed-in user info.
         const user = result.user;
         userresult=user
-        
+        goToLink('/src/index.html')
         // ...
         console.log("SignIn successful.")
     }).catch((error) => {
