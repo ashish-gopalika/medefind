@@ -1,6 +1,6 @@
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js';
 import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut} from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js';
-import {getFirestore,collection, addDoc} from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
+import {getFirestore,collection, addDoc,getDocs,updateDoc,arrayUnion,doc} from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
 
 var userresult
 
@@ -15,7 +15,7 @@ const firebaseApp= initializeApp({
 
 const db = getFirestore(firebaseApp);
 
-const auth = getAuth(firebaseApp)
+const auth = getAuth(firebaseApp);
 
 function goToLink(link) {
     location.replace(link)
@@ -33,9 +33,26 @@ const makeAuth =()=>{
         // The signed-in user info.
         const user = result.user;
         userresult=user
-        goToLink('/src/index.html')
         // ...
         console.log("SignIn successful.")
+        
+        if(user)
+          {
+          var putdatayes;
+          localStorage.clear()
+          localStorage.setItem('email',userresult.email)         
+            console.log(checkEmail(user));
+            checkEmail(user).then(function(val) {
+              putdatayes=val;
+              console.log("value of putdatayes: "+putdatayes)
+              if(putdatayes)
+                postUserData(user)
+            })
+            
+          goToLink('/src/order.html');  
+          }
+          
+        
     }).catch((error) => {
         // Handle Errors here.
         const errorCode = error.code;
@@ -57,28 +74,54 @@ const stateCheck=()=>{
           console.log(uid);
           console.log(userresult);
           try {
-            console.log("Hello, "+userresult.displayName);   
+            console.log("Hello, "+userresult.displayName);
+            loginstate=true;   
           } catch (error) {
               console.log("Not a user");
           }
           
           // ...
         } else {
-          // User is signed out
+          console.log("User is signed out");
           // ...
         }
       });
     }
-const signOutUser=()=>{
-    signOut(auth).then(() => {
-        console.log("Sign-out successful.") 
-      }).catch((error) => {
-        // An error happened.
+// const signOutUser=()=>{
+//     signOut(auth).then(() => {
+//         console.log("Sign-out successful.") 
+//       }).catch((error) => {
+//         // An error happened.
+//       });
+// }
+
+async function postUserData(user){
+    try {
+      const docRef = await addDoc(collection(db, "users"), {
+        email: user.email,
+        uname: user.displayName,
+        orderhistory: []
       });
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
 }
 
 
-document.getElementById("checkbutton").addEventListener("click", stateCheck);
+async function checkEmail(user){
+  var putdatayes=1;
 
+  const querySnapshot = await getDocs(collection(db, "users"));
+  querySnapshot.forEach((doc) => {
+    if(doc.data().email==user.email)
+    {
+      putdatayes=0;
+    }
+});
+return putdatayes;
+}
+
+document.getElementById("statecheck").addEventListener("click", stateCheck)
 document.getElementById("signinbutton").addEventListener("click", makeAuth);
 

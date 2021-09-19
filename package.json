@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/codewithkushagra/medefind#readme",
   "dependencies": {
-    "firebase": "^9.0.2"
+    "firebase": "^9.0.2",
+    "node-requirejs": "^0.1.1"
   }
 }
