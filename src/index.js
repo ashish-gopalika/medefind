@@ -49,7 +49,7 @@ const makeAuth =()=>{
                 postUserData(user)
             })
             
-          goToLink('/src/order.html');  
+          goToLink('/src/index.html');  
           }
           
         
@@ -122,6 +122,5 @@ async function checkEmail(user){
 return putdatayes;
 }
 
-document.getElementById("statecheck").addEventListener("click", stateCheck)
 document.getElementById("signinbutton").addEventListener("click", makeAuth);
 

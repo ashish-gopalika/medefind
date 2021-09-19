@@ -43,8 +43,55 @@ const stateCheck=()=>{
         }
       });
     }
+// {
+//     pname:'',
+//     sname:'',
+//     quantity:0,
+//     price:0,
+//     rating:0
+// }
 
+var docus=[],keyus=[];
+async function getProducts(){
+  const querySnapshot = await getDocs(collection(db, "adminproducts"));
+  querySnapshot.forEach((doc) => {
+        getSnameById(doc.data().store,doc.data());
+        docus.push(doc.data().product.pname); 
+    });
+    return arr;
+}
 
+var arr=[];
+function getSnameById(storeid){
+    console.log(typeof(storeid));
+    for(var i of storeid){
+        var key = Object.keys(i)[0]
+        console.log(key)
+        keyus.push(i)
+        arr.push(key)
+    }
+}
+
+async function getSname(key,docm,i){
+    var details
+    const querySnapshot = await getDocs(collection(db, "admincart"));
+      querySnapshot.forEach((doc) => {
+          
+        if(doc.data().store.suid==key)
+        {
+            details={
+                pname:docm,
+                sname:doc.data().store.sname,
+                quantity: i[key]['quantity'],
+                price: i[key]['price'],
+                rating: doc.data().store.rating
+            }
+          
+        }
+
+    });
+    return details;
+}
 
 const signOutUser=()=>{
     signOut(auth).then(() => {
@@ -55,10 +102,72 @@ const signOutUser=()=>{
       });
 }
 
-
-
 stateCheck();
 
-document.getElementById("signout").addEventListener("click", signOutUser)
+var finaldata=[]
+// document.getElementById("signout").addEventListener("click", signOutUser)
+
+getProducts().then((products) => {
+    console.log(products)
+    for(var j of docus){
+    var c=0;
+    for(var i of products) {
+        getSname(i,j,keyus[c]).then((details) =>{
+            finaldata.push(details)
+        })
+        c++;
+    }
+
+    }
+    insertData();
+    console.log(finaldata)
+
+});
+
+// pname: "ambroxyl"
+// price: 12
+// quantity: 90
+// rating: 3
+// sname: "medicao"
+// [[Prototype]]: Object
+// 1:
+// pname: "ambroxyl"
+// price: 10
+// quantity: "100"
+// rating: 2
+// sname: "manas"
 
 
+
+function insertData(){
+    
+    var s;
+    s=`<div class="project-card">
+    <h1 id="pname">${'ambroxyl'}</h1>
+    <table class="tab">
+        <tr>
+            <th>Store</th>
+            <th>Rating</th>
+            <th>Price</th>
+            <th>Quantity</th>
+        </tr>
+        <tr>
+            <td>${'medicao'}</td>
+            <td>${'3'}</td>
+            <td>${'12'}</td>
+            <td>${'90'}</td>
+        </tr>
+        <tr>
+            <td>${'manas'}</td>
+            <td>${'2'}</td>
+            <td>${'10'}</td>
+            <td>${'100'}</td>
+        </tr>
+    </table>
+    
+</div>`
+    document.getElementById('getproduct').innerHTML=s;
+}
+
+
+// document.getElementById("arr").addEventListener("click", printarr)
